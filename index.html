@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美食记录</title>
+<style>
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+body{
+  max-width: 920px;
+  margin: 32px auto;
+  padding: 0 18px;
+  color: #222;
+  background-color: #fafafa;
+}
+h1{
+  font-size: 26px;
+  margin-bottom: 24px;
+}
+.filter-bar{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.filter-bar button{
+  padding: 7px 14px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.filter-bar button.active{
+  background: #222;
+  color: white;
+  border-color: #222;
+}
+.item{
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.tag{
+  display: inline-block;
+  font-size: 12px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+.tag-takeaway{
+  background: #e8f4ff;
+  color: #0052cc;
+}
+.tag-dine{
+  background: #fff2cc;
+  color: #b35900;
+}
+.tag-recommend{
+  background: #d5eed5;
+  color: #1b721b;
+}
+.tag-ok{
+  background: #fff8dc;
+  color: #806600;
+}
+.tag-bad{
+  background: #ffe9e9;
+  color: #b82828;
+}
+.item h2{
+  font-size: 19px;
+  margin: 8px 0 4px;
+}
+.price{
+  color: #666;
+  font-size: 14px;
+}
+.desc{
+  margin-top: 8px;
+  color: #444;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+<h1>美食记录</h1>
+<div class="filter-bar">
+  <button data-filter="all" class="active">全部</button>
+  <button data-filter="takeaway">外卖</button>
+  <button data-filter="dine">堂食</button>
+  <button data-filter="recommend">强烈推荐</button>
+  <button data-filter="ok">还可以</button>
+  <button data-filter="bad">不推荐</button>
+</div>
+<div id="list"></div>
+
+<script>
+// ========== 在这里添加/修改你的美食数据 ==========
+const foods = [
+  {
+    name: "绿茶餐厅",
+    mode: "takeaway",    // takeaway外卖 / dine堂食
+    rate: "recommend",   // recommend强烈推荐 / ok还可以 / bad不推荐
+    price: "28元",
+    desc: "烤鸡套餐，好吃但分量大，吃不完"
+  },
+  {
+    name: "渝八两重庆鸡公煲",
+    mode: "takeaway",
+    rate: "recommend",
+    price: "21元",
+    desc: "鸡公煲，好吃、分量大，吃不完"
+  }
+  // 继续在这里加，格式照着上面复制
+];
+// ==============================================
+
+let currentFilter = "all";
+const listEl = document.getElementById("list");
+
+function render() {
+  listEl.innerHTML = "";
+  const filtered = foods.filter(item => {
+    if (currentFilter === "all") return true;
+    if (currentFilter === "takeaway") return item.mode === "takeaway";
+    if (currentFilter === "dine") return item.mode === "dine";
+    if (currentFilter === "recommend") return item.rate === "recommend";
+    if (currentFilter === "ok") return item.rate === "ok";
+    if (currentFilter === "bad") return item.rate === "bad";
+    return true;
+  });
+
+  filtered.forEach(food => {
+    const div = document.createElement("div");
+    div.className = "item";
+
+    let tagModeText = food.mode === "takeaway" ? "外卖" : "堂食";
+    let tagRateText = food.rate === "recommend" ? "强烈推荐"
+                   : food.rate === "ok" ? "还可以" : "不推荐";
+
+    div.innerHTML = `
+      <span class="tag tag-${food.mode}">${tagModeText}</span>
+      <span class="tag ${food.rate}">${tagRateText}</span>
+      <h2>${food.name}</h2>
+      <div class="price">${food.price}</div>
+      <div class="desc">${food.desc}</div>
+    `;
+    listEl.appendChild(div);
+  });
+}
+
+// 筛选按钮点击事件
+document.querySelectorAll(".filter-bar button").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".filter-bar button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;
+    render();
+  };
+});
+
+render();
+</script>
+</body>
+</html>
